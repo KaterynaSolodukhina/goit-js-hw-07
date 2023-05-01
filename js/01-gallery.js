@@ -1,36 +1,38 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-const galleryContainerEl = document.querySelector(".gallery");
-const imagesMarkup = createItemsMarkup(galleryItems);
-galleryContainerEl.insertAdjacentHTML("beforeend", imagesMarkup);
+console.log(galleryItems);
 
-function createItemsMarkup(item) {
-  return galleryItems
-    .map(({ preview, original, description }) => {
-      return `<div class="gallery__item">
-      <a class="gallery__link" href="${original.value}">
-        <img
-          class="gallery__image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </div>`;
-    })
-    .join("");
-}
-const onContainerClick = (e) => {
-  e.preventDefault();
+const gallery = document.querySelector(".gallery");
 
-  if (e.target.classList.contains("gallery")) return;
-  const source = e.target.dataset.source;
+const makeGalleryCard = ({ preview, original, description }) =>
+  `<li class="gallery__item">
+  <a class="gallery__link" href="${original}">
+    <img
+      class="gallery__image"
+      src="${preview}"
+      data-source="${original}"
+      alt="${description}"
+    />
+  </a>
+</li>`;
+const markup = galleryItems.map((element) => makeGalleryCard(element)).join("");
 
-  const instance = basicLightbox.create(`
-    <img src="${source}"width="800" height="600">`);
+gallery.insertAdjacentHTML("afterbegin", markup);
 
-  instance.show();
-};
+gallery.addEventListener("click", (event) => {
+  event.preventDefault();
 
-galleryContainerEl.addEventListener("click", onContainerClick);
+  if (event.target.nodeName !== "IMG") {
+    return;
+  }
+  console.log(event.target);
+  const largeImageUrl = event.target.dataset.source;
+
+  basicLightbox
+    .create(
+      `
+    <img src="${largeImageUrl}" width="800" height="600">`
+    )
+    .show();
+});
